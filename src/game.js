@@ -24,8 +24,6 @@ export default class Game {
         [0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0],
     ];
-    activePieceX = 0;
-    activePieceY = 0;
     activePiece = {
         x:0,
         y:0,
@@ -34,11 +32,34 @@ export default class Game {
             [1,1,1],
             [0,0,0],
         ],
+        rotationIndex: 0,
+        rotations: [
+            [
+                [0,1,0],
+                [1,1,1],
+                [0,0,0],
+            ],
+            [
+                [0,1,0],
+                [0,1,1],
+                [0,1,0],
+            ],
+            [
+                [0,0,0],
+                [1,1,1],
+                [0,1,0],
+            ],
+            [
+                [0,1,0],
+                [1,1,0],
+                [0,1,0],
+            ],
+        ],
    }
 
    movePieceRight() {
     this.activePiece.x += 1;
-    if (this.isPieceOutOfBounds()) {
+    if (this.hasCollision()) {
         this.activePiece.x -= 1;
         this.lockPiece();
     }
@@ -46,7 +67,7 @@ export default class Game {
 
    movePieceLeft() {
     this.activePiece.x -= 1;
-    if (this.isPieceOutOfBounds()) {
+    if (this.hasCollision()) {
         this.activePiece.x += 1;
         this.lockPiece();
     }
@@ -54,13 +75,25 @@ export default class Game {
    
    movePieceDown() {
     this.activePiece.y += 1;
-    if (this.isPieceOutOfBounds()) {
+    if (this.hasCollision()) {
         this.activePiece.y -= 1;
         this.lockPiece();
     }
    }
 
-   isPieceOutOfBounds() {
+   rotatePiece() {
+    const activePiece = this.activePiece;
+
+    if (activePiece.rotationIndex === 3) {
+        activePiece.rotationIndex = 0;
+    } else {
+        activePiece.rotationIndex += 1;
+    }
+    activePiece.blocks = activePiece.rotations[activePiece.rotationIndex];
+    return activePiece.blocks;
+   }
+
+   hasCollision() {
     const playfield = this.playfield;
     const {y: pieceY, x: pieceX, blocks} = this.activePiece;
 
